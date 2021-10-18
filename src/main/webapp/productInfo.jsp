@@ -1,23 +1,46 @@
-<%@ include file="includes/head.jsp" %>
-<%@ include file="includes/header.jsp" %>
+
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/sql" prefix="sql"%>
+
+
+<%@ include file="includes/head.jsp"%>
+<%@ include file="includes/header.jsp"%>
+
+<sql:setDataSource var="ds"
+	driver="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+	url="jdbc:sqlserver://localhost\\instance:1433;databaseName=ShoppingDB"
+	user="sa" password="yourStrong(!)Password" />
+<sql:query dataSource="${ds}"
+	sql="SELECT * FROM Products WHERE product_id=?" var="results">
+	<sql:param>${param.id}</sql:param>
+</sql:query>
+
+<c:set scope="page" var="product" value="${results.rows[0]}"></c:set>
+<c:set scope="page" var="productName" value="${product.product_name}"></c:set>
+<c:set scope="page" var="productImg"
+	value="${product.product_img_source}"></c:set>
+<c:set scope="page" var="productPrice" value="${product.product_price}"></c:set>
+<c:set scope="page" var="productType" value="${product.product_type}"></c:set>
+<c:set scope="page" var="productInfo" value="${product.product_des}"></c:set>
+
 
 <div class="container">
 	<div class="row">
-		<h1>Product name</h1>
+		<h1>${productName}</h1>
 	</div>
 	<hr>
 	<div class="row">
 		<div class="col">
-			<img src="https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/iphone-13-family-select-2021?wid=470&hei=556&fmt=jpeg&qlt=95&.v=1629842667000">
+			<img src="${product.product_img_source}">
 		</div>
-	
+
 		<div class="col">
-			<h2 class="text-danger">Price</h2>
-			<p>Product info</p>
+			<h2 class="text-danger">$ ${productPrice}</h2>
+			<p>${productInfo}</p>
 			<button type="button" class="btn btn-warning">Add to cart</button>
 		</div>
 	</div>
 </div>
 
-<%@ include file="includes/js-bootstrap.jsp" %>
-<%@ include file="includes/footer.jsp" %>
+<%@ include file="includes/js-bootstrap.jsp"%>
+<%@ include file="includes/footer.jsp"%>

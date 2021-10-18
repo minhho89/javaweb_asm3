@@ -1,4 +1,4 @@
-<footer class="page-footer font-small blue">
+<footer class="page-footer font-small blue mt-2">
 
 	<!-- Copyright -->
 	<div class="footer-copyright text-center py-3 bg-dark text-light">© 2021 Copyright:
