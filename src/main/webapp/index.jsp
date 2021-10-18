@@ -28,7 +28,7 @@
 			<div class="row">
 		</c:if>
 
-		<a href="${pageContext.request.contextPath}/productInfo.jsp">
+		<a href="<c:url value="/productInfo.jsp?id=${product.product_id}" />">
 			<div class="col-12 col-md-4">
 				<div class="card mb-2 p-2" style="width: 18rem">
 					<img src="${product.product_img_source}" class="card-img-top">
