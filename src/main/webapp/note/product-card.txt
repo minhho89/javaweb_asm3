@@ -1,0 +1,9 @@
+<a href="${pageContext.request.contextPath}/productInfo.jsp">
+	<div class="card m-2 p-2" style="width: 18rem">
+		<img src="https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/iphone-13-family-select-2021?wid=470&hei=556&fmt=jpeg&qlt=95&.v=1629842667000"
+		 class="card-img-top">
+		<h5>Category</h5>
+		<h6 class="text-info">Product name</h6>
+		<h6 class="text-danger">Price</h6>
+	</div>
+</a>
