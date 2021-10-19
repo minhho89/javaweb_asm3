@@ -34,7 +34,7 @@
 					<img src="${product.product_img_source}" class="card-img-top">
 					<h5>${productType}</h5>
 					<h6 class="text-info">${productName}</h6>
-					<h6 class="text-danger">$ ${productPrice}</h6>
+					<h6 class="text-danger">VND ${productPrice}0.000</h6>
 				</div>
 			</div>
 		</a>
