@@ -1,18 +1,26 @@
 package controllers;
 
 import java.io.IOException;
+
 import java.sql.Connection;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import beans.Account;
+import beans.Order;
 import dao.ConnectionWorker;
+import dao.OrdersDAO;
 import utils.DatabaseUtil;
+import utils.OrderStatus;
 
 /**
  * Servlet implementation class HomeController
@@ -21,6 +29,9 @@ import utils.DatabaseUtil;
 public class HomeController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
+	// Product list added to cart
+	List<String> cartItems = new ArrayList<>();
+	
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
@@ -37,7 +48,6 @@ public class HomeController extends HttpServlet {
 			throws ServletException, IOException {
 		request.setAttribute("message", "");
 		request.getRequestDispatcher("/index.jsp").forward(request, response);
-		
 	}
 
 	/**
@@ -48,11 +58,13 @@ public class HomeController extends HttpServlet {
 			throws ServletException, IOException {
 		// Get action
 		String action = request.getParameter("action");
-		String url = "/login.jsp";
+		String url = "/index.jsp";
 		String message = "";
 
 		if (action == null) {
-			action = "dologin"; // default
+//			action = "dologin"; // default
+			//TODO: debug
+			System.out.println("action null ");
 		}
 
 		// Connect to database
@@ -63,39 +75,106 @@ public class HomeController extends HttpServlet {
 		// Create account instance
 		Account account = null;
 
+		// Create session
+		HttpSession session = request.getSession();
+		session.setAttribute("cw", cw);
+		
+
+		// Login
 		if (action.equals("dologin")) {
+			//TODO: debug
+			System.out.println("action do login" + action);
+			
 			String email = request.getParameter("email");
 			String password = request.getParameter("password");
 
-			account = new Account(email, password);
-			
+//			account = new Account(email, password);
+			account = cw.getAccountInfo(email);
+
 			System.out.println(account.getMail() + ": " + account.getPassword());
-			
-			HttpSession session = request.getSession();
 
 			try {
 				if (cw.doLogin(account)) {
 					url = "/index.jsp";
-					System.out.println("Login success");
+					session.setAttribute("account", account);
+					// TODO: debug
+					System.out.println("Login success. Account: " + account);
 				} else {
 					url = "/login.jsp";
 					message = "Email address or password not recognized";
+					
+					// TODO: debug
 					System.out.println("Login failed");
 				}
 			} catch (java.sql.SQLException e) {
 				e.printStackTrace();
 				url = "/login.jsp";
 				message = "Database error: please try again later";
+			// TODO: debug
 				System.out.println("Database failed");
-				
+
 			}
 
-			session.setAttribute("account", account);
+			session.setAttribute("email", email);
 			request.setAttribute("message", message);
 
-			getServletContext().getRequestDispatcher(url).forward(request, response);
+		} else if (action.equals("cart")) {
+			//TODO: debug
+			System.out.println("action " + action);
 
+			String productCode = request.getParameter("productCode");
+			cartItems.add(productCode);
+			
+			session.setAttribute("cartItems", cartItems);
+			
+			String email = (String)session.getAttribute("email");
+			// TODO: debug
+			System.out.println("Email:" +  email);
+			if (email == null) {
+				email = "duongdt@fpt.com.vn"; //default
+			}
+			
+			account = cw.getAccountInfo(email);
+
+			if (account != null) {
+				// TODO: debug
+				System.out.println(account);
+								
+				int id = cw.getMaxOderId() + 1;
+				int orderStatus = OrderStatus.ORDER_PROCESSING;
+				LocalDate orderDate = LocalDate.now();
+				String discountCode = "";
+				String address = cw.getAccountInfo(email).getAddress();
+
+				Order order = new Order(id, email, orderStatus, orderDate, discountCode, address);
+
+				// write Order to database
+				OrdersDAO od = new OrdersDAO(cw, order);
+				od.writeToDB();
+				url = "/cart.jsp";
+				
+				session.setAttribute("productCode", productCode);
+				
+			} else {
+				System.out.println("Account instance is null");
+			}
+
+		} else {
+			url = "/index.jsp";
+			System.out.println(action);
 		}
+		
+		getServletContext().getRequestDispatcher(url).forward(request, response);
 	}
 
+	public void printCookies(HttpServletRequest request) {
+		Cookie[]  cookies = request.getCookies();
+		System.out.println("Cookies");
+		for (int i = 0; i < cookies.length; i++) {
+			  String name = cookies[i].getName();
+			  String value = cookies[i].getValue();
+			  System.out.println("name :" + name + "| value:"  + value);
+		}
+	}
+	
 }

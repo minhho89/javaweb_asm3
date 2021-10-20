@@ -5,18 +5,21 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 
+import javax.imageio.event.IIOReadWarningListener;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
+import beans.Order;
 import dao.ConnectionWorker;
+import dao.DatabaseDAO;
+import dao.OrdersDAO;
 
 /**
  * Servlet implementation class TestDBServlet
@@ -46,25 +49,30 @@ public class TestDBServlet extends HttpServlet {
 		Connection conn = cw.getConnection();
 		if (conn != null) {
 			try {
-				out.println("Connected");
-				DatabaseMetaData dm = (DatabaseMetaData)conn.getMetaData();
-				out.println(dm.getDriverName());
-				out.println(dm.getDriverVersion());
-				out.println(dm.getDatabaseProductName());
-				out.println(dm.getDatabaseProductVersion());
+//				out.println("Connected");
+//				DatabaseMetaData dm = (DatabaseMetaData)conn.getMetaData();
+//				out.println(dm.getDriverName());
+//				out.println(dm.getDriverVersion());
+//				out.println(dm.getDatabaseProductName());
+//				out.println(dm.getDatabaseProductVersion());
+//				
+//				// Test SQL query
+//				Statement statement = conn.createStatement();
+//				ResultSet resultSet
+//                = statement.executeQuery("SELECT * FROM Account");
+//				while(resultSet.next()) {
+//					out.println(resultSet.getString("user_mail"));
+//				}
+			
+//				out.println(cw.getMaxOderId());
+				out.println(cw.getAccountInfo("duongdt@fpt.com.vn"));
 				
-				// Test SQL query
-				Statement statement = conn.createStatement();
-				ResultSet resultSet
-                = statement.executeQuery("SELECT * FROM Account");
-				while(resultSet.next()) {
-					out.println(resultSet.getString("user_mail"));
-				}
+				LocalDate today = LocalDate.now();
 				
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				out.println("Error connect to server");
+				Order order = new Order(2, "duongdt@fpt.com.vn", 2, today, "123", "dasd");
+				OrdersDAO od = new OrdersDAO(cw, order);
+				od.writeToDB();
+				
 			} finally {
 				cw.closeConnection(conn);
 			}

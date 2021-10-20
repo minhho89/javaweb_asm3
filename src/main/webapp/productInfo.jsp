@@ -38,9 +38,10 @@
 		<div class="col">
 			<h2 class="text-danger">VND ${productPrice}0.000</h2>
 			<p>${productInfo}</p>
-			<form action="cart" method="post">
+			<form action='<%=request.getContextPath()%>/controller'  method="post">
+			<input type="hidden" name="action" value="cart">
 				<input type="hidden" name="productCode" value="${productID}">
-				<button type="button" class="btn btn-warning">Add to cart</button>
+				<input type="submit" class="btn btn-warning" value="Add to Cart"></input>
 			</form>
 	
 		</div>

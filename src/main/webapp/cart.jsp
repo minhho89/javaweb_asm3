@@ -1,5 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/sql" prefix="sql"%>
+
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -23,6 +27,7 @@
 <%@ include file="includes/header.jsp"%>
 
 <body>
+
 	<div class="container">
 		<div class="card m-4">
 			<div class="row">
@@ -38,24 +43,63 @@
 								items</div>
 						</div>
 					</div>
+
+
+					<!--  JSPL data -->
+					<sql:setDataSource var="ds"
+						driver="com.microsoft.sqlserver.jdbc.SQLServerDriver"
+						url="jdbc:sqlserver://localhost\\instance:1433;databaseName=ShoppingDB"
+						user="sa" password="yourStrong(!)Password" />
+
+					<c:forEach items="${sessionScope.cartItems}" var="itemID">
+						<sql:query dataSource="${ds}"
+							sql="SELECT * FROM Products WHERE product_id=?" var="results">
+							<sql:param>${itemID}</sql:param>
+						</sql:query>
+
+						<c:set scope="page" var="product" value="${results.rows[0]}"></c:set>
+						<c:set scope="page" var="productID" value="${product.product_id}"></c:set>
+						<c:set scope="page" var="productName"
+							value="${product.product_name}"></c:set>
+						<c:set scope="page" var="productImg"
+							value="${product.product_img_source}"></c:set>
+						<c:set scope="page" var="productPrice"
+							value="${product.product_price}"></c:set>
+						<c:set scope="page" var="productType"
+							value="${product.product_type}"></c:set>
+						<c:set scope="page" var="productInfo"
+							value="${product.product_des}"></c:set>
+
+					<!--  item -->
 					<div class="row border-top border-bottom">
 						<div class="row main align-items-center">
 							<div class="col-2">
-								<img class="img-fluid" src="https://i.imgur.com/1GrakTl.jpg">
+								<img class="img-fluid" src="${product.product_img_source}">
 							</div>
 							<div class="col">
-								<div class="row text-muted">Shirt</div>
-								<div class="row">Cotton T-shirt</div>
+								<div class="row text-muted">${product.product_type}</div>
+								<div class="row">${product.product_name}</div>
 							</div>
 							<div class="col">
 								<a href="#">-</a><a href="#" class="border">1</a><a href="#">+</a>
 							</div>
 							<div class="col">
-								&euro; 44.00 <span class="close">&#10005;</span>
+								VND ${product.product_price}0.000 <span class="close">&#10005;</span>
 							</div>
 						</div>
 					</div>
-					<div class="row">
+					<!--  end item -->
+
+					</c:forEach>
+
+
+
+
+
+
+
+
+					<!-- 					<div class="row">
 						<div class="row main align-items-center">
 							<div class="col-2">
 								<img class="img-fluid" src="https://i.imgur.com/ba3tvGm.jpg">
@@ -88,7 +132,8 @@
 								&euro; 44.00 <span class="close">&#10005;</span>
 							</div>
 						</div>
-					</div>
+					</div> -->
+
 					<div class="back-to-shop">
 						<a href="#">&leftarrow;</a><span class="text-muted">Back to
 							shop</span>

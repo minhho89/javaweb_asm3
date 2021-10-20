@@ -84,4 +84,12 @@ public class Account implements Serializable{
 		this.phone = phone;
 	}
 
+	@Override
+	public String toString() {
+		return "Account [name=" + name + ", mail=" + mail + ", password=" + password + ", role=" + role + ", address="
+				+ address + ", phone=" + phone + "]";
+	}
+	
+	
+
 }
