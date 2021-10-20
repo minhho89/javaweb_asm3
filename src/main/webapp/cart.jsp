@@ -51,10 +51,11 @@
 						url="jdbc:sqlserver://localhost\\instance:1433;databaseName=ShoppingDB"
 						user="sa" password="yourStrong(!)Password" />
 
-					<c:forEach items="${sessionScope.cartItems}" var="itemID">
+<%-- 					<c:forEach items="${sessionScope.cartItems}" var="itemID"> --%>
+					<c:forEach items="${sessionScope.detailsList}" var="detailsItem">
 						<sql:query dataSource="${ds}"
 							sql="SELECT * FROM Products WHERE product_id=?" var="results">
-							<sql:param>${itemID}</sql:param>
+							<sql:param>${detailsItem.getProductID()}</sql:param>
 						</sql:query>
 
 						<c:set scope="page" var="product" value="${results.rows[0]}"></c:set>
@@ -81,7 +82,7 @@
 								<div class="row">${product.product_name}</div>
 							</div>
 							<div class="col">
-								<a href="#">-</a><a href="#" class="border">1</a><a href="#">+</a>
+								<a href="#">-</a><a href="#" class="border">${detailsItem.getProductAmount()}</a><a href="#">+</a>
 							</div>
 							<div class="col">
 								VND ${product.product_price}0.000 <span class="close">&#10005;</span>
