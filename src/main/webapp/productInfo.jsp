@@ -16,6 +16,7 @@
 </sql:query>
 
 <c:set scope="page" var="product" value="${results.rows[0]}"></c:set>
+<c:set scope="page" var="productID" value="${product.product_id}"></c:set>
 <c:set scope="page" var="productName" value="${product.product_name}"></c:set>
 <c:set scope="page" var="productImg"
 	value="${product.product_img_source}"></c:set>
@@ -35,9 +36,14 @@
 		</div>
 
 		<div class="col">
-			<h2 class="text-danger">$ ${productPrice}</h2>
+			<h2 class="text-danger">VND ${productPrice}0.000</h2>
 			<p>${productInfo}</p>
-			<button type="button" class="btn btn-warning">Add to cart</button>
+			<form action='<%=request.getContextPath()%>/controller'  method="post">
+			<input type="hidden" name="action" value="cart">
+				<input type="hidden" name="productCode" value="${productID}">
+				<input type="submit" class="btn btn-warning" value="Add to Cart"></input>
+			</form>
+	
 		</div>
 	</div>
 </div>

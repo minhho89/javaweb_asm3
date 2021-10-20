@@ -25,14 +25,14 @@ public class ConnectionWorker {
 
 	@SuppressWarnings("finally")
 	public Connection getConnection() {
-		
+
 		Connection conn = null;
 		try {
 			// Register Driver
-			Class.forName(driverName).getConstructor().newInstance();		
+			Class.forName(driverName).getConstructor().newInstance();
 			// Get connection
 			conn = DriverManager.getConnection(dbUrl, user, password);
-			
+
 			System.out.println("Database connected. User = " + user);
 		} catch (SQLException ex) {
 			ex.printStackTrace();
@@ -41,7 +41,7 @@ public class ConnectionWorker {
 			return conn;
 		}
 	}
-	
+
 	public void closeConnection(Connection conn) {
 		try {
 			if (conn != null && !conn.isClosed()) {
@@ -53,12 +53,12 @@ public class ConnectionWorker {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public boolean doLogin(Account acc) throws SQLException {
 		String sql = "SELECT COUNT(*) AS count FROM Account WHERE user_mail=? and password=?";
 
 		Connection conn = getConnection();
-		
+
 		PreparedStatement stmt = conn.prepareStatement(sql);
 
 		stmt.setString(1, acc.getMail());
@@ -71,7 +71,7 @@ public class ConnectionWorker {
 		if (rs.next()) {
 			count = rs.getInt("count");
 		}
-		
+
 		rs.close();
 
 		if (count == 0) {
@@ -79,7 +79,64 @@ public class ConnectionWorker {
 		} else {
 			return true;
 		}
-		
+
+	}
+
+	@SuppressWarnings("finally")
+	public int getMaxOderId() {
+		String sql = "SELECT MAX(order_id) AS maxOrder FROM Orders";
+
+		Connection conn = getConnection();
+
+		PreparedStatement stmt;
+		int result = 0;
+		try {
+			stmt = conn.prepareStatement(sql);
+			ResultSet rs = stmt.executeQuery();
+			while (rs.next()) {
+				result = rs.getInt("maxOrder");
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			return result;
+		}
+	}
+
+	@SuppressWarnings("finally")
+	public Account getAccountInfo(String user_mail) {
+		String sql = "SELECT * FROM account WHERE user_mail=?";
+
+		Account acc = new Account();
+		Connection conn = getConnection();
+		PreparedStatement stmt;
+		try {
+			stmt = conn.prepareStatement(sql);
+			stmt.setString(1, user_mail);
+
+			ResultSet rs = stmt.executeQuery();
+			while (rs.next()) {
+				String password = rs.getString("password");
+				int role = rs.getInt("account_role");
+				String name = rs.getString("user_name");
+				String address = rs.getString("user_address");
+				String phone = rs.getString("user_phone");
+				// set to acc
+				acc.setMail(user_mail);
+				acc.setPassword(password);
+				acc.setRole(role);
+				acc.setName(name);
+				acc.setAddress(address);
+				acc.setPhone(phone);
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			return acc;
+		}
 	}
 
 }

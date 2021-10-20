@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.Month;
 
-public class Oder implements Serializable {
+public class Order implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -15,7 +15,7 @@ public class Oder implements Serializable {
 	private String discountCode;
 	private String address;
 	
-	public Oder() {
+	public Order() {
 		this.id = -1;
 		this.mail = "";
 		this.status = -1;
@@ -24,12 +24,12 @@ public class Oder implements Serializable {
 		this.address = "";
 	}
 
-	public Oder(int id, String mail, int status, LocalDate date, String discountCode, String address) {
-		super();
+	public Order(int id, String mail, int status, LocalDate date, String discountCode, String address) {
 		this.id = id;
 		this.mail = mail;
 		this.status = status;
 		this.date = date;
+		this.discountCode = discountCode;
 		this.address = address;
 	}
 
