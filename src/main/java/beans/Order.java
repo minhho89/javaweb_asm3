@@ -80,5 +80,12 @@ public class Order implements Serializable {
 	public void setAddress(String address) {
 		this.address = address;
 	}
+
+	@Override
+	public String toString() {
+		return "Order [id=" + id + ", mail=" + mail + ", status=" + status + ", date=" + date + ", discountCode="
+				+ discountCode + ", address=" + address + "]";
+	}
+	
 	
 }

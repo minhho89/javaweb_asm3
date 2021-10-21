@@ -18,11 +18,31 @@
 	driver="com.microsoft.sqlserver.jdbc.SQLServerDriver"
 	url="jdbc:sqlserver://localhost\\instance:1433;databaseName=ShoppingDB"
 	user="sa" password="yourStrong(!)Password" />
-<sql:query dataSource="${ds}" sql="SELECT * FROM Products" var="results" />
+<sql:query dataSource="${ds}"
+	sql="SELECT * FROM Products WHERE product_name like ?" var="results">
+	<sql:param>%${sessionScope.searchKey}%</sql:param>
+</sql:query>
+
+<sql:query dataSource="${ds}"
+	sql="SELECT COUNT(*) AS count FROM Products WHERE product_name like ?"
+	var="counts">
+	<sql:param>%${sessionScope.searchKey}%</sql:param>
+</sql:query>
 
 <c:set var="gridWidth" value="3" />
 
 <div class="container">
+
+	<c:if test="${counts.rowsByIndex[0][0] < 1}">
+		<div class="container">
+			<div class="row m-5">
+				<h2>There is no results from your search</h2>
+			</div>
+		</div>
+
+
+	</c:if>
+
 	<c:forEach var="product" items="${results.rows}" varStatus="row">
 		<c:set scope="page" var="productName" value="${product.product_name}"></c:set>
 		<c:set scope="page" var="productImg"
@@ -47,8 +67,8 @@
 		</a>
 
 		<c:if test="${(row.index + 1) % gridWidth == 0}">
-			</div>
-		</c:if>
+</div>
+</c:if>
 
 
 </c:forEach>
