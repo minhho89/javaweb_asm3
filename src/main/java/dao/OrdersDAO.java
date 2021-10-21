@@ -52,7 +52,7 @@ public class OrdersDAO {
 
 			stmt.execute();
 
-			System.out.println("New record added");
+			System.out.println("New Order added: " + order.toString());
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

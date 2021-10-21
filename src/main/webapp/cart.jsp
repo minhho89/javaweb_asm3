@@ -28,6 +28,38 @@
 
 <body>
 
+<div class="container">
+		<div class="card m-4 p-4">
+
+
+			<div>
+				<h5>
+					<b>Buyer Information</b>
+				</h5>
+			</div>
+			<hr>
+
+			<div class="row">
+				<p>Name: ${ sessionScope.account.getName()}</p>
+			</div>
+			<div class="row">
+				<p>Email: ${ sessionScope.account.getMail()}</p>
+			</div>
+			<div class="row">
+				<p>Phone: ${ sessionScope.account.getPhone()}</p>
+			</div>
+			<div class="row">
+				<p>Address: ${ sessionScope.account.getAddress()}</p>
+			</div>
+			<div class="row">
+				<p>Email: ${ sessionScope.account.getMail()}</p>
+			</div>
+
+
+		</div>
+	</div>
+
+
 	<div class="container">
 		<div class="card m-4">
 			<div class="row">
@@ -51,7 +83,8 @@
 						url="jdbc:sqlserver://localhost\\instance:1433;databaseName=ShoppingDB"
 						user="sa" password="yourStrong(!)Password" />
 
-					<c:forEach items="${sessionScope.detailsList.getList()}" var="detailsItem">
+					<c:forEach items="${sessionScope.detailsList.getList()}"
+						var="detailsItem">
 						<sql:query dataSource="${ds}"
 							sql="SELECT * FROM Products WHERE product_id=?" var="results">
 							<sql:param>${detailsItem.getProductID()}</sql:param>
@@ -67,11 +100,12 @@
 							value="${product.product_price}"></c:set>
 						<c:set scope="page" var="productType"
 							value="${product.product_type}"></c:set>
-						<c:set scope="page" var="orderDetailsItemById" value="${sessionScope.detailsList.getOrderDetailsObjectByProId(productID)}">
+						<c:set scope="page" var="orderDetailsItemById"
+							value="${sessionScope.detailsList.getOrderDetailsObjectByProId(productID)}">
 						</c:set>
-						
 
-						
+
+
 						<!--  item -->
 						<div class="row border-top border-bottom">
 							<div class="row main align-items-center">
@@ -86,11 +120,12 @@
 									<a href="#" class="border">${detailsItem.getProductAmount()}</a>
 								</div>
 								<div class="col">
-									VND ${detailsItem.getProductAmount() * detailsItem.getProductPrice()}0.000<span class="close">&#10005;</span>
+									VND ${detailsItem.getProductAmount() * detailsItem.getProductPrice()}0.000<span
+										class="close">&#10005;</span>
 								</div>
-								
+
 							</div>
-						</div> 
+						</div>
 						<!--  end item -->
 
 					</c:forEach>
@@ -100,7 +135,7 @@
 							class="text-muted">Back to shop</span>
 					</div>
 				</div>
-				
+
 				<div class="col-md-4 summary">
 					<div>
 						<h5>
@@ -108,17 +143,25 @@
 						</h5>
 					</div>
 					<hr>
-					
+
 					<div class="row"
 						style="border-top: 1px solid rgba(0, 0, 0, .1); padding: 2vh 0;">
 						<div class="col">TOTAL PRICE</div>
-						<div class="col text-right">VND ${sessionScope.detailsList.calculateTotalPrice()}0.000</div>
+						<div class="col text-right">VND
+							${sessionScope.detailsList.calculateTotalPrice()}0.000</div>
 					</div>
-					<button class="btn">CHECKOUT</button>
+					<form action='<%=request.getContextPath()%>/controller'
+						method="post">
+						<input type="hidden" name="action" value="checkout"> <input
+							type="submit" class="btn btn-warning" value="CHECK OUT"></input>
+					</form>
 				</div>
 			</div>
 		</div>
 	</div>
+
+
+	
 
 	<%@ include file="includes/js-bootstrap.jsp"%>
 	<%@ include file="includes/footer.jsp"%>

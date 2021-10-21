@@ -20,6 +20,7 @@ import beans.Account;
 import beans.Order;
 import beans.OrderDetails;
 import dao.ConnectionWorker;
+import dao.OrderDetailsDAO;
 import dao.OrdersDAO;
 import utils.DatabaseUtil;
 import utils.OrderDetailsList;
@@ -32,7 +33,7 @@ public class HomeController extends HttpServlet {
 	OrderDetailsList detailsList = new OrderDetailsList();
 	// Order ID
 	int orderId = 0;
-	
+
 	public HomeController() {
 		super();
 		ConnectionWorker cw = ConnectionWorker.connectMSSQL();
@@ -56,16 +57,47 @@ public class HomeController extends HttpServlet {
 		case "cart":
 			addToCart(request, response);
 			return;
+		case "checkout":
+			doCheckOut(request, response);
+			return;
 		default:
 			toHomePage(request, response);
 			break;
 		}
 	}
 
-	private void toHomePage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	private void doCheckOut(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		HttpSession session = request.getSession();
+
+		ConnectionWorker cw = ConnectionWorker.connectMSSQL();
+		Order order = (Order) session.getAttribute("order");
+
+		// write Order to database
+		OrdersDAO od = new OrdersDAO(cw, order);
+		try {
+			if (!od.isOrderIdExist(order.getId())) {
+				od.writeToDB();
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// Write OrderDetails to Database
+		OrderDetailsDAO odd = new OrderDetailsDAO(cw, detailsList);
+		odd.writeToDatabase();
+		
+		getServletContext().getRequestDispatcher("/checkout.jsp").forward(request, response);
+
+	}
+
+	private void toHomePage(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		getServletContext().getRequestDispatcher("/index.jsp").forward(request, response);
 	}
-	
+
 	private void doLogin(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String url;
@@ -100,6 +132,7 @@ public class HomeController extends HttpServlet {
 		}
 
 		session.setAttribute("email", email);
+		session.setAttribute("account", account);
 		request.setAttribute("message", message);
 		getServletContext().getRequestDispatcher(url).forward(request, response);
 
@@ -111,7 +144,7 @@ public class HomeController extends HttpServlet {
 
 		String productCode = request.getParameter("productCode");
 		String productPrice = request.getParameter("productPrice");
-		
+
 		HttpSession session = request.getSession();
 
 		String email = (String) session.getAttribute("email");
@@ -123,7 +156,6 @@ public class HomeController extends HttpServlet {
 		}
 
 		Account account = cw.getAccountInfo(email);
-		
 
 		if (account != null) {
 			// TODO: debug
@@ -135,23 +167,15 @@ public class HomeController extends HttpServlet {
 			String address = cw.getAccountInfo(email).getAddress();
 
 			Order order = new Order(orderId, email, orderStatus, orderDate, discountCode, address);
-			
+
 			// Create new OrderDetails
-			OrderDetails details = new OrderDetails(order.getId(),Integer.parseInt(productCode),1,  Double.parseDouble(productPrice));
+			OrderDetails details = new OrderDetails(order.getId(), Integer.parseInt(productCode), 1,
+					Double.parseDouble(productPrice));
 			detailsList.addToDetailsList(details);
 
 			session.setAttribute("detailsList", detailsList);
+			session.setAttribute("order", order);
 
-			// write Order to database
-			OrdersDAO od = new OrdersDAO(cw, order);
-			try {
-				if (!od.isOrderIdExist(order.getId())) {
-					od.writeToDB();
-				}
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			url = "/cart.jsp";
 			session.setAttribute("productCode", productCode);
 		} else {
