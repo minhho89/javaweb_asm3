@@ -94,9 +94,10 @@ public class HomeController extends HttpServlet {
 			System.out.println("action " + action);
 
 			String productCode = request.getParameter("productCode");
+			String productPrice = request.getParameter("productPrice");
 			cartItems.add(productCode);
 
-			OrderDetails details = new OrderDetails(Integer.parseInt(productCode));
+			OrderDetails details = new OrderDetails(Integer.parseInt(productCode), Double.parseDouble(productPrice));
 
 			// Add to Order Details List
 			detailsList.addToDetailsList(details);

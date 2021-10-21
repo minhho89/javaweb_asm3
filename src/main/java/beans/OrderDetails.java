@@ -26,9 +26,18 @@ public class OrderDetails implements Serializable {
 		this.productPrice = productPrice;
 	}
 	
-	public OrderDetails(int productID) {
+	public OrderDetails(int productID, double productPrice) {
 		this.productID = productID;
+		this.productPrice = productPrice;
 	}
+	
+	// for test
+	public OrderDetails(int productID, int productAmount, double productPrice) {
+		this.productID = productID;
+		this.productAmount = productAmount;
+		this.productPrice = productPrice;
+	}
+	
 
 	public int getId() {
 		return id;

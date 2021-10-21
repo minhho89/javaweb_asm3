@@ -41,6 +41,7 @@
 			<form action='<%=request.getContextPath()%>/controller'  method="post">
 			<input type="hidden" name="action" value="cart">
 				<input type="hidden" name="productCode" value="${productID}">
+				<input type="hidden" name="productPrice" value="${productPrice}">
 				<input type="submit" class="btn btn-warning" value="Add to Cart"></input>
 			</form>
 	

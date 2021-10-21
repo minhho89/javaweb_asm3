@@ -31,7 +31,7 @@ public class OrderDetailsList {
 	
 	
 	public double calculateTotalPrice() {
-		int sum = 0;
+		double sum = 0;
 		for (OrderDetails od : orderDetailsList) {
 			sum += calculateTotalPriceByItem(od);
 		}

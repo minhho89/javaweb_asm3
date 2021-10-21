@@ -67,7 +67,9 @@
 							value="${product.product_price}"></c:set>
 						<c:set scope="page" var="productType"
 							value="${product.product_type}"></c:set>
-						<c:set scope="page" var="productInfo">></c:set>
+						<c:set scope="page" var="orderDetailsItemById" value="${sessionScope.detailsList.getOrderDetailsObjectByProId(productID)}">
+						</c:set>
+						
 						<!--  item -->
 						<div class="row border-top border-bottom">
 							<div class="row main align-items-center">
@@ -82,7 +84,7 @@
 									<a href="#" class="border">${detailsItem.getProductAmount()}</a>
 								</div>
 								<div class="col">
-									VND ${sessionScope.detailsList.getOrderDetailsObjectByProId(productID).getProductAmount() * productPrice}0.000<span class="close">&#10005;</span>
+									VND ${detailsItem.getProductAmount() * detailsItem.getProductPrice()}0.000<span class="close">&#10005;</span>
 								</div>
 								
 							</div>
@@ -105,7 +107,7 @@
 					</div>
 					<hr>
 					<div class="row">
-						<div class="col text-right">&euro; 132.00</div>
+						<div class="col text-right">VND ${sessionScope.detailsList.calculateTotalPrice()}0.000</div>
 					</div>
 					<form>
 						<p>SHIPPING</p>
