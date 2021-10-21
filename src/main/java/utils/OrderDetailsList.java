@@ -39,7 +39,7 @@ public class OrderDetailsList {
 	}
 	
 	
-	public ArrayList<OrderDetails> getOrderDetailsList() {
+	public ArrayList<OrderDetails> getList() {
 		return orderDetailsList;
 	}
 

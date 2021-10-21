@@ -3,6 +3,7 @@ package controllers;
 import java.io.IOException;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,138 +25,60 @@ import utils.DatabaseUtil;
 import utils.OrderDetailsList;
 import utils.OrderStatus;
 
-/**
- * Servlet implementation class HomeController
- */
 @WebServlet("/controller")
 public class HomeController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	// Product list added to cart
-	List<String> cartItems = new ArrayList<>();
-	// Order details
 	OrderDetailsList detailsList = new OrderDetailsList();
-
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
+	// Order ID
+	int orderId = 0;
+	
 	public HomeController() {
 		super();
-		// TODO Auto-generated constructor stub
+		ConnectionWorker cw = ConnectionWorker.connectMSSQL();
+		orderId = cw.getMaxOderId() + 1;
 	}
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		request.setAttribute("message", "");
 		request.getRequestDispatcher("/index.jsp").forward(request, response);
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// Get action
 		String action = request.getParameter("action");
-		String url = "/index.jsp";
-		String message = "";
 
-		if (action == null) {
-//			action = "dologin"; // default
-			// TODO: debug
-			System.out.println("action null ");
+		switch (action) {
+		case "dologin":
+			doLogin(request, response);
+			return;
+		case "cart":
+			addToCart(request, response);
+			return;
+		default:
+			toHomePage(request, response);
+			break;
 		}
-
-		// Connect to database
-		ConnectionWorker cw = new ConnectionWorker(DatabaseUtil.SQLSERVER_URL, DatabaseUtil.SQLSERVER_USERNAME,
-				DatabaseUtil.SQLSERVER_PASSWORD, DatabaseUtil.SQLSERVER_DRIVE);
-		Connection conn = cw.getConnection();
-
-		// Create account instance
-		Account account = null;
-
-		// Create session
-		HttpSession session = request.getSession();
-
-		session.setAttribute("cw", cw);
-
-		// Login
-		if (action.equals("dologin")) {
-			doLogin(action, request, account, cw, url, session, message);
-
-			// Add to cart
-		} else if (action.equals("cart")) {
-			// TODO: debug
-			System.out.println("action " + action);
-
-			String productCode = request.getParameter("productCode");
-			String productPrice = request.getParameter("productPrice");
-			cartItems.add(productCode);
-
-			OrderDetails details = new OrderDetails(Integer.parseInt(productCode), Double.parseDouble(productPrice));
-
-			// Add to Order Details List
-			detailsList.addToDetailsList(details);
-
-			session.setAttribute("cartItems", cartItems);
-			session.setAttribute("detailsList", detailsList);
-			
-			String email = (String) session.getAttribute("email");
-			// TODO: debug
-			System.out.println("Email:" + email);
-			if (email == null) {
-				email = "duongdt@fpt.com.vn"; // default
-			}
-
-			account = cw.getAccountInfo(email);
-
-			if (account != null) {
-				// TODO: debug
-				System.out.println(account);
-
-				int id = cw.getMaxOderId() + 1;
-				int orderStatus = OrderStatus.ORDER_PROCESSING;
-				LocalDate orderDate = LocalDate.now();
-				String discountCode = "";
-				String address = cw.getAccountInfo(email).getAddress();
-
-				Order order = new Order(id, email, orderStatus, orderDate, discountCode, address);
-
-				// write Order to database
-				OrdersDAO od = new OrdersDAO(cw, order);
-//				od.writeToDB();
-				url = "/cart.jsp";
-
-				session.setAttribute("productCode", productCode);
-
-			} else {
-				System.out.println("Account instance is null");
-			}
-
-		} else {
-			url = "/index.jsp";
-			System.out.println(action);
-		}
-
-		getServletContext().getRequestDispatcher(url).forward(request, response);
 	}
 
-	private void doLogin(String action, HttpServletRequest request, Account account, ConnectionWorker cw, String url,
-			HttpSession session, String message) {
-		// TODO: debug
-		System.out.println("action do login" + action);
+	private void toHomePage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		getServletContext().getRequestDispatcher("/index.jsp").forward(request, response);
+	}
+	
+	private void doLogin(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		String url;
+		String message = null;
 
 		String email = request.getParameter("email");
 		String password = request.getParameter("password");
 
-		account = cw.getAccountInfo(email);
+		ConnectionWorker cw = ConnectionWorker.connectMSSQL();
 
-		System.out.println(account.getMail() + ": " + account.getPassword());
+		Account account = cw.getAccountInfo(email);
+
+		HttpSession session = request.getSession();
 
 		try {
 			if (cw.doLogin(account)) {
@@ -174,23 +97,67 @@ public class HomeController extends HttpServlet {
 			e.printStackTrace();
 			url = "/login.jsp";
 			message = "Database error: please try again later";
-			// TODO: debug
-			System.out.println("Database failed");
-
 		}
 
 		session.setAttribute("email", email);
 		request.setAttribute("message", message);
+		getServletContext().getRequestDispatcher(url).forward(request, response);
+
 	}
 
-	public void printCookies(HttpServletRequest request) {
-		Cookie[] cookies = request.getCookies();
-		System.out.println("Cookies");
-		for (int i = 0; i < cookies.length; i++) {
-			String name = cookies[i].getName();
-			String value = cookies[i].getValue();
-			System.out.println("name :" + name + "| value:" + value);
+	private void addToCart(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		String url = null;
+
+		String productCode = request.getParameter("productCode");
+		String productPrice = request.getParameter("productPrice");
+		
+		HttpSession session = request.getSession();
+
+		String email = (String) session.getAttribute("email");
+
+		ConnectionWorker cw = ConnectionWorker.connectMSSQL();
+
+		if (email == null) {
+			email = "duongdt@fpt.com.vn"; // default
 		}
+
+		Account account = cw.getAccountInfo(email);
+		
+
+		if (account != null) {
+			// TODO: debug
+			System.out.println(account);
+
+			int orderStatus = OrderStatus.ORDER_PROCESSING;
+			LocalDate orderDate = LocalDate.now();
+			String discountCode = "";
+			String address = cw.getAccountInfo(email).getAddress();
+
+			Order order = new Order(orderId, email, orderStatus, orderDate, discountCode, address);
+			
+			// Create new OrderDetails
+			OrderDetails details = new OrderDetails(order.getId(),Integer.parseInt(productCode),1,  Double.parseDouble(productPrice));
+			detailsList.addToDetailsList(details);
+
+			session.setAttribute("detailsList", detailsList);
+
+			// write Order to database
+			OrdersDAO od = new OrdersDAO(cw, order);
+			try {
+				if (!od.isOrderIdExist(order.getId())) {
+					od.writeToDB();
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			url = "/cart.jsp";
+			session.setAttribute("productCode", productCode);
+		} else {
+			System.out.println("Account instance is null");
+		}
+		getServletContext().getRequestDispatcher(url).forward(request, response);
 	}
 
 }

@@ -51,7 +51,7 @@
 						url="jdbc:sqlserver://localhost\\instance:1433;databaseName=ShoppingDB"
 						user="sa" password="yourStrong(!)Password" />
 
-					<c:forEach items="${sessionScope.detailsList.getOrderDetailsList()}" var="detailsItem">
+					<c:forEach items="${sessionScope.detailsList.getList()}" var="detailsItem">
 						<sql:query dataSource="${ds}"
 							sql="SELECT * FROM Products WHERE product_id=?" var="results">
 							<sql:param>${detailsItem.getProductID()}</sql:param>
@@ -69,6 +69,8 @@
 							value="${product.product_type}"></c:set>
 						<c:set scope="page" var="orderDetailsItemById" value="${sessionScope.detailsList.getOrderDetailsObjectByProId(productID)}">
 						</c:set>
+						
+
 						
 						<!--  item -->
 						<div class="row border-top border-bottom">
@@ -88,7 +90,7 @@
 								</div>
 								
 							</div>
-						</div>
+						</div> 
 						<!--  end item -->
 
 					</c:forEach>
@@ -106,17 +108,7 @@
 						</h5>
 					</div>
 					<hr>
-					<div class="row">
-						<div class="col text-right">VND ${sessionScope.detailsList.calculateTotalPrice()}0.000</div>
-					</div>
-					<form>
-						<p>SHIPPING</p>
-						<select>
-							<option class="text-muted">Standard-Delivery- &euro;5.00</option>
-						</select>
-						<p>GIVE CODE</p>
-						<input id="code" placeholder="Enter your code">
-					</form>
+					
 					<div class="row"
 						style="border-top: 1px solid rgba(0, 0, 0, .1); padding: 2vh 0;">
 						<div class="col">TOTAL PRICE</div>

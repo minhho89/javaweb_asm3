@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import beans.Account;
+import utils.DatabaseUtil;
 
 public class ConnectionWorker {
 
@@ -40,6 +41,11 @@ public class ConnectionWorker {
 		} finally {
 			return conn;
 		}
+	}
+	
+	public static ConnectionWorker connectMSSQL() {
+		return new ConnectionWorker(DatabaseUtil.SQLSERVER_URL, DatabaseUtil.SQLSERVER_USERNAME,
+				DatabaseUtil.SQLSERVER_PASSWORD, DatabaseUtil.SQLSERVER_DRIVE);
 	}
 
 	public void closeConnection(Connection conn) {

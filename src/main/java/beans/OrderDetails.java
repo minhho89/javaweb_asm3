@@ -19,7 +19,6 @@ public class OrderDetails implements Serializable {
 	}
 
 	public OrderDetails(int id, int productID, int productAmount, double productPrice) {
-		super();
 		this.id = id;
 		this.productID = productID;
 		this.productAmount = productAmount;
@@ -30,6 +29,7 @@ public class OrderDetails implements Serializable {
 		this.productID = productID;
 		this.productPrice = productPrice;
 	}
+	
 	
 	// for test
 	public OrderDetails(int productID, int productAmount, double productPrice) {
