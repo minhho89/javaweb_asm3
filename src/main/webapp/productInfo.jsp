@@ -2,9 +2,16 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/sql" prefix="sql"%>
 
+<c:import url="includes/head.jsp">
+	<c:param name="title" value="PRJ321x-A3 | Product Info"></c:param>
+	<c:param name="title" value="style.css"></c:param>
+</c:import>
 
-<%@ include file="includes/head.jsp"%>
-<%@ include file="includes/header.jsp"%>
+<c:import url="includes/header.jsp">
+	<c:param name="product_active" value="active"></c:param>
+</c:import>
+
+<%@ include file="includes/login_register.jsp"%>
 
 <sql:setDataSource var="ds"
 	driver="com.microsoft.sqlserver.jdbc.SQLServerDriver"

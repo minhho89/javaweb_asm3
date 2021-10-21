@@ -53,6 +53,9 @@ public class HomeController extends HttpServlet {
 			throws ServletException, IOException {
 		String action = request.getParameter("action");
 
+		response.setContentType("text/html;charset=UTF-8");
+		request.setCharacterEncoding("utf-8");
+		
 		switch (action) {
 		case "dologin":
 			doLogin(request, response);

@@ -4,8 +4,15 @@
 
 <c:import url="includes/head.jsp">
 	<c:param name="title" value="PRJ321x-A3 Home"></c:param>
+	<c:param name="cssFileName" value="style.css"></c:param>
 </c:import>
-<%@ include file="includes/header.jsp"%>
+
+
+<c:import url="includes/header.jsp">
+	<c:param name="home_active" value="active"></c:param>
+</c:import>
+
+<%@ include file="includes/login_register.jsp"%>
 
 <sql:setDataSource var="ds"
 	driver="com.microsoft.sqlserver.jdbc.SQLServerDriver"

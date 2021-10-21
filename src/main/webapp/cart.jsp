@@ -1,30 +1,18 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/sql" prefix="sql"%>
 
-
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<!--  Responsive -->
-<meta name="viewport"
-	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<c:import url="includes/head.jsp">
+	<c:param name="title" value="PRJ321x-A3 Home"></c:param>
+	<c:param name="cssFileName" value="cart.css"></c:param>
+</c:import>
 
 
-<!-- Bootstrap -->
-<link rel="stylesheet"
-	href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
-	integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l"
-	crossorigin="anonymous">
-<!--  custom CSS -->
-<link rel="stylesheet" href="styles/cart.css" type="text/css">
+<c:import url="includes/header.jsp">
+	<c:param name="home_active" value="active"></c:param>
+</c:import>
 
-<title>Insert title here</title>
-</head>
-
-<%@ include file="includes/header.jsp"%>
+<%@ include file="includes/login_register.jsp"%>
 
 <body>
 
