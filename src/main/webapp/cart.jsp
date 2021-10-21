@@ -39,7 +39,7 @@
 									<b>Shopping Cart</b>
 								</h4>
 							</div>
-							<div class="col align-self-center text-right text-muted">3
+							<div class="col align-self-center text-right text-muted">${sessionScope.detailsList.getTotalItems()}
 								items</div>
 						</div>
 					</div>
@@ -51,8 +51,7 @@
 						url="jdbc:sqlserver://localhost\\instance:1433;databaseName=ShoppingDB"
 						user="sa" password="yourStrong(!)Password" />
 
-<%-- 					<c:forEach items="${sessionScope.cartItems}" var="itemID"> --%>
-					<c:forEach items="${sessionScope.detailsList}" var="detailsItem">
+					<c:forEach items="${sessionScope.detailsList.getOrderDetailsList()}" var="detailsItem">
 						<sql:query dataSource="${ds}"
 							sql="SELECT * FROM Products WHERE product_id=?" var="results">
 							<sql:param>${detailsItem.getProductID()}</sql:param>
@@ -68,36 +67,36 @@
 							value="${product.product_price}"></c:set>
 						<c:set scope="page" var="productType"
 							value="${product.product_type}"></c:set>
-						<c:set scope="page" var="productInfo"
-							value="${product.product_des}"></c:set>
-
-					<!--  item -->
-					<div class="row border-top border-bottom">
-						<div class="row main align-items-center">
-							<div class="col-2">
-								<img class="img-fluid" src="${product.product_img_source}">
-							</div>
-							<div class="col">
-								<div class="row text-muted">${product.product_type}</div>
-								<div class="row">${product.product_name}</div>
-							</div>
-							<div class="col">
-								<a href="#">-</a><a href="#" class="border">${detailsItem.getProductAmount()}</a><a href="#">+</a>
-							</div>
-							<div class="col">
-								VND ${product.product_price}0.000 <span class="close">&#10005;</span>
+						<c:set scope="page" var="productInfo">></c:set>
+						<!--  item -->
+						<div class="row border-top border-bottom">
+							<div class="row main align-items-center">
+								<div class="col-2">
+									<img class="img-fluid" src="${product.product_img_source}">
+								</div>
+								<div class="col">
+									<div class="row text-muted">${product.product_type}</div>
+									<div class="row">${product.product_name}</div>
+								</div>
+								<div class="col">
+									<a href="#" class="border">${detailsItem.getProductAmount()}</a>
+								</div>
+								<div class="col">
+									VND ${sessionScope.detailsList.getOrderDetailsObjectByProId(productID).getProductAmount() * productPrice}0.000<span class="close">&#10005;</span>
+								</div>
+								
 							</div>
 						</div>
-					</div>
-					<!--  end item -->
+						<!--  end item -->
 
 					</c:forEach>
 
 					<div class="back-to-shop">
-						<a href="<%=request.getContextPath()%>/controller">&leftarrow;</a><span class="text-muted">Back to
-							shop</span>
+						<a href="<%=request.getContextPath()%>/controller">&leftarrow;</a><span
+							class="text-muted">Back to shop</span>
 					</div>
 				</div>
+				
 				<div class="col-md-4 summary">
 					<div>
 						<h5>
@@ -106,7 +105,6 @@
 					</div>
 					<hr>
 					<div class="row">
-						<div class="col" style="padding-left: 0;">ITEMS 3</div>
 						<div class="col text-right">&euro; 132.00</div>
 					</div>
 					<form>
@@ -120,7 +118,7 @@
 					<div class="row"
 						style="border-top: 1px solid rgba(0, 0, 0, .1); padding: 2vh 0;">
 						<div class="col">TOTAL PRICE</div>
-						<div class="col text-right">&euro; 137.00</div>
+						<div class="col text-right">VND ${sessionScope.detailsList.calculateTotalPrice()}0.000</div>
 					</div>
 					<button class="btn">CHECKOUT</button>
 				</div>

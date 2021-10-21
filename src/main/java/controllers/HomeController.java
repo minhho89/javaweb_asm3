@@ -21,6 +21,7 @@ import beans.OrderDetails;
 import dao.ConnectionWorker;
 import dao.OrdersDAO;
 import utils.DatabaseUtil;
+import utils.OrderDetailsList;
 import utils.OrderStatus;
 
 /**
@@ -33,7 +34,7 @@ public class HomeController extends HttpServlet {
 	// Product list added to cart
 	List<String> cartItems = new ArrayList<>();
 	// Order details
-	List<OrderDetails> detailsList = new ArrayList<>();
+	OrderDetailsList detailsList = new OrderDetailsList();
 
 	/**
 	 * @see HttpServlet#HttpServlet()
@@ -98,11 +99,11 @@ public class HomeController extends HttpServlet {
 			OrderDetails details = new OrderDetails(Integer.parseInt(productCode));
 
 			// Add to Order Details List
-			addToDetailsList(details);
+			detailsList.addToDetailsList(details);
 
 			session.setAttribute("cartItems", cartItems);
 			session.setAttribute("detailsList", detailsList);
-
+			
 			String email = (String) session.getAttribute("email");
 			// TODO: debug
 			System.out.println("Email:" + email);
@@ -179,37 +180,6 @@ public class HomeController extends HttpServlet {
 
 		session.setAttribute("email", email);
 		request.setAttribute("message", message);
-	}
-
-	private void addToDetailsList(OrderDetails details) {
-
-		boolean isExistFlag = false;
-		
-	
-		for (int i = 0; i < detailsList.size(); i++) {
-			
-			if (detailsList.get(i).getProductID() == details.getProductID()) {
-			
-				isExistFlag = true;
-				detailsList.get(i).setProductAmount(detailsList.get(i).getProductAmount() + 1);
-				break;
-			}
-		}
-
-		if (!isExistFlag) {
-			details.setProductAmount(1);
-			detailsList.add(details);
-		}
-
-		// TODO: debug
-		if (detailsList.size() > 0) {
-			for (OrderDetails od : detailsList) {
-				System.out.println(od);
-			}
-		} else {
-			System.out.println("Details list is empty");
-		}
-
 	}
 
 	public void printCookies(HttpServletRequest request) {
