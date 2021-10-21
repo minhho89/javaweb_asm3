@@ -152,7 +152,8 @@
 					</div>
 					<form action='<%=request.getContextPath()%>/controller'
 						method="post">
-						<input type="hidden" name="action" value="checkout"> <input
+						<input type="hidden" name="action" value="checkout"> 
+						<input
 							type="submit" class="btn btn-warning" value="CHECK OUT"></input>
 					</form>
 				</div>

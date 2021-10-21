@@ -9,21 +9,20 @@
 			</div>
 			
 			<div class="col-11">
-				<form>
+				<form action='<%=request.getContextPath()%>/controller' method="post">
 					<div class="form-row">
 						<div class="col-10">
 							<div class="form-inline">
 								<select class="custom-select my-1 mr-sm-2" id="inlineFormCustomSelectPref">
 								    <option selected>Categories</option>
-								    <option value="1">One</option>
-								    <option value="2">Two</option>
-								    <option value="3">Three</option>
+								    <option value="1">cellphone</option>
 							    </select>
-								<input class="form-control flex-fill" type="search" placeholder="Search" aria-label="Search">
+								<input class="form-control flex-fill" type="text" name="searchKey" placeholder="Search" aria-label="Search">
 							</div>
 						</div>
 						<div class="col-2">
-							<button class="btn btn-outline-warning my-2 my-sm-0" type="submit">Search</button>
+							<input type="hidden" name="action" value="search">
+							<input class="btn btn-outline-warning my-2 my-sm-0" type="submit" value="search"></input>
 						</div>
 					</div>
 				</form>	

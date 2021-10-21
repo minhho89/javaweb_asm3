@@ -19,9 +19,11 @@ import javax.servlet.http.HttpSession;
 import beans.Account;
 import beans.Order;
 import beans.OrderDetails;
+import beans.Product;
 import dao.ConnectionWorker;
 import dao.OrderDetailsDAO;
 import dao.OrdersDAO;
+import dao.ProductDAO;
 import utils.DatabaseUtil;
 import utils.OrderDetailsList;
 import utils.OrderStatus;
@@ -38,6 +40,7 @@ public class HomeController extends HttpServlet {
 		super();
 		ConnectionWorker cw = ConnectionWorker.connectMSSQL();
 		orderId = cw.getMaxOderId() + 1;
+
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -60,10 +63,24 @@ public class HomeController extends HttpServlet {
 		case "checkout":
 			doCheckOut(request, response);
 			return;
+		case "search":
+			doSearch(request, response);
+			return;
 		default:
 			toHomePage(request, response);
 			break;
 		}
+	}
+
+	private void doSearch(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		HttpSession session = request.getSession();
+
+		String searchKey = request.getParameter("searchKey");
+		session.setAttribute("searchKey", searchKey);
+
+		getServletContext().getRequestDispatcher("/searchPage.jsp").forward(request, response);
 	}
 
 	private void doCheckOut(HttpServletRequest request, HttpServletResponse response)
@@ -88,7 +105,7 @@ public class HomeController extends HttpServlet {
 		// Write OrderDetails to Database
 		OrderDetailsDAO odd = new OrderDetailsDAO(cw, detailsList);
 		odd.writeToDatabase();
-		
+
 		getServletContext().getRequestDispatcher("/checkout.jsp").forward(request, response);
 
 	}
